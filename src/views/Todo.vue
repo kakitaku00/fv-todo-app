@@ -34,6 +34,7 @@ export default {
     }
   },
   created() {
+    // 要素が作られた際イベントを登録し変更を監視
     db.collection("todos").orderBy('createdAt', 'desc').onSnapshot((querySnapShot) => {
       let allTodos = [];
       querySnapShot.forEach(doc => {
@@ -50,6 +51,7 @@ export default {
         createdAt: new Date()
       })
       .then((docRef) => {
+        // ドキュメントidをフィールドに登録
         db.collection("todos").doc(docRef.id).update({
           id: docRef.id
         })
@@ -57,6 +59,7 @@ export default {
       this.newTodo = ""
     },
     stateTodo: function(todo) {
+      // ...todoと渡し、他の変更にも対応
       db.collection("todos").doc(todo.id).update({...todo})
     },
     deleteTodo: function(todo) {
