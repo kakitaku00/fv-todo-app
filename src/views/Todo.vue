@@ -10,7 +10,11 @@
     <div class="todo_task">
       <ul>
         <li v-for="todo in todos" :key="todo.id">
-          {{todo.todo}}
+          <label class="todo-item">
+            <input type="checkbox" v-model="todo.done" @change="stateTodo(todo)">
+            {{todo.todo}}
+            <input type="button" value="[×]" @click="deleteTodo(todo)">
+          </label>
         </li>
       </ul>
     </div>
@@ -18,6 +22,8 @@
 </template>
 
 <script>
+import firebase from 'firebase/app'
+import { db } from '../main'
 
 export default {
   name: "todo",
@@ -27,6 +33,15 @@ export default {
       todos: []
     }
   },
+  created() {
+    db.collection("todos").orderBy('createdAt', 'desc').onSnapshot((querySnapShot) => {
+      let allTodos = [];
+      querySnapShot.forEach(doc => {
+        allTodos.push(doc.data())
+      });
+      this.todos = allTodos;
+    })
+  },
   methods: {
     addTodo: function() {
       db.collection("todos").add({
@@ -34,21 +49,22 @@ export default {
         done: false,
         createdAt: new Date()
       })
+      .then((docRef) => {
+        db.collection("todos").doc(docRef.id).update({
+          id: docRef.id
+        })
+      })
       this.newTodo = ""
     },
-    getTodo: function() {
-      db.collection("todos").onSnapshot((querySnapShot) => {
-        let allTodos = [];
-        querySnapShot.forEach(doc => {
-          allTodos.push(doc.data())
-        });
-        this.todos = allTodos;
-      })
+    stateTodo: function(todo) {
+      db.collection("todos").doc(todo.id).update({...todo})
+    },
+    deleteTodo: function(todo) {
+      if (window.confirm("Are you sure delete ?")) {
+        db.collection("todos").doc(todo.id).delete()
+      }
     }
   },
-  created() {
-    this.getTodo()
-  }
 }
 </script>
 

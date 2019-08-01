@@ -21,8 +21,8 @@ const firebaseConfig = {
 // 追加
 firebase.initializeApp(firebaseConfig)
 
-const db = firebase.firestore()
-window.db = db
+export const db = firebase.firestore();
+// window.db = db
 
 new Vue({
   router,
