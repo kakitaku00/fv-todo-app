@@ -36,7 +36,7 @@ export default {
   created() {
     // 要素が作られた際イベントを登録し変更を監視
     db.collection("todos").orderBy('createdAt', 'desc').onSnapshot((querySnapShot) => {
-      let allTodos = [];
+      const allTodos = [];
       querySnapShot.forEach(doc => {
         allTodos.push(doc.data())
       });
