@@ -1,30 +1,37 @@
 <template>
   <div class="todo">
-    <form>
-      <label>
-        New Todo:
-        <input v-model="newTodo" type="text"/>
-        <button type="submit" @click.prevent="addTodo()">Add</button>
-      </label>
-    </form>
-    <div class="todo_task">
-      <ul>
-        <li v-for="todo in todos" :key="todo.id">
-          <label class="todo-item">
-            <input type="checkbox" v-model="todo.done" @change="stateTodo(todo)">
-            {{todo.todo}}
-            <input type="button" value="[×]" @click="deleteTodo(todo)">
-          </label>
-        </li>
-      </ul>
+    <header-item></header-item>
+    <div class="todo-container">
+      <form class="todo-form">
+        <label  class="todo-label">
+          <span class="todo-newText">New Todo:</span>
+          <input v-model="newTodo" type="text" class="todo-input" placeholder="add todo text"/>
+          <button class="btn todo-btn todo-btn--add" type="submit" @click.prevent="addTodo()">Add</button>
+        </label>
+      </form>
+      <div class="todo-task">
+        <ul class="todo-list">
+          <li v-for="todo in todos" :key="todo.id" class="todo-item">
+            <label class="todo-item-label">
+              <input type="checkbox" v-model="todo.done" @change="stateTodo(todo)" class="todo-item-check">
+              <span :class="{'is-done': todo.done }" class="todo-item-text">{{todo.todo}}</span>
+              <input type="button" value="×" @click="deleteTodo(todo)" class="todo-item-delete">
+            </label>
+          </li>
+        </ul>
+      </div>
     </div>
-    <button @click="logout">Logout</button>
+    <div class="logout">
+      <button class="btn btn-logout" @click="logout">Logout</button>
+    </div>
   </div>
 </template>
 
 <script>
 import firebase from 'firebase/app'
 import { db } from '../main'
+
+import HeaderItem from "../components/HeaderItem"
 
 export default {
   name: "todo",
@@ -101,10 +108,108 @@ export default {
         }
       })
     })
+  },
+  components: {
+    HeaderItem: HeaderItem
   }
 }
 </script>
 
 <style lang="scss" scoped>
+  .btn {
+    background-color: #eee;
+    border-radius: 5px;
+    padding: 7px 13px;
+    cursor: pointer;
+  }
 
+  .todo {
+    position: relative;
+    height: 100vh;
+  }
+
+  .todo-container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .todo-form {
+    padding: 20px;
+    margin: 30px auto;
+    border-radius: 5px;
+    box-shadow: 0 3px 8px #ccc;
+  }
+
+  .todo-label {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 0 auto;
+  }
+
+  .todo-newText {
+    display: block;
+    flex: 1 1 100%;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  .todo-task {
+    height: 45vh;
+    margin-bottom: 20px;
+    overflow: scroll;
+  }
+
+  .todo-input {
+    flex: 2 1 auto;
+    margin-right: 1em;
+  }
+
+  .todo-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .todo-item {
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+
+    &-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    &-text {
+      flex: 2 1 auto;
+      margin: 0 10px;
+    }
+
+    &-delete {
+      display: flex;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      line-height: 11px;
+      text-align: center;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  }
+
+  .is-done {
+    text-decoration: line-through;
+    color: #aaa;
+  }
+
+  .logout {
+    position: absolute;
+    bottom: 20px;
+    right: 0;
+    left: 0;
+    margin: auto;
+  }
 </style>
