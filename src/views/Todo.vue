@@ -24,36 +24,39 @@
 
 <script>
 import firebase from 'firebase/app'
+require("firebase/auth")
 import { db } from '../main'
+import { get } from 'http';
 
 export default {
   name: "todo",
   data() {
     return {
       newTodo: "",
-      todos: []
+      todos: [],
+      authUser: {}
     }
   },
-  created() {
-    // 要素が作られた際イベントを登録し変更を監視
-    db.collection("todos").orderBy('createdAt', 'desc').onSnapshot((querySnapShot) => {
-      const allTodos = [];
-      querySnapShot.forEach(doc => {
-        allTodos.push(doc.data())
-      });
-      this.todos = allTodos;
-    })
-  },
   methods: {
+    getTodo: function() {
+      // 要素が作られた際イベントを登録し変更を監視
+      db.collection("users").doc(this.authUser.uid).collection("todos").orderBy('createdAt', 'desc').onSnapshot((querySnapShot) => {
+        const allTodos = [];
+        querySnapShot.forEach(doc => {
+          allTodos.push(doc.data())
+        });
+        this.todos = allTodos;
+      })
+    },
     addTodo: function() {
-      db.collection("todos").add({
+      db.collection("users").doc(this.authUser.uid).collection("todos").add({
         todo: this.newTodo,
         done: false,
         createdAt: new Date()
       })
       .then((docRef) => {
         // ドキュメントidをフィールドに登録
-        db.collection("todos").doc(docRef.id).update({
+        db.collection("users").doc(this.authUser.uid).collection("todos").doc(docRef.id).update({
           id: docRef.id
         })
       })
@@ -61,12 +64,12 @@ export default {
     },
     stateTodo: function(todo) {
       // ...todoと渡し、他の変更にも対応
-      db.collection("todos").doc(todo.id).update({...todo})
+      db.collection("users").doc(this.authUser.uid).collection("todos").doc(todo.id).update({...todo})
     },
     deleteTodo: function(todo) {
-      db.collection("todos").doc(todo.id).delete()
+      db.collection("users").doc(this.authUser.uid).collection("todos").doc(todo.id).delete()
       // if (window.confirm("Are you sure delete ?")) {
-      //   db.collection("todos").doc(todo.id).delete()
+      //   db.collection("users").doc(this.authUser.uid).collection("todos").doc(todo.id).delete()
       // }
     },
     logout() {
@@ -77,6 +80,16 @@ export default {
         console.log(error);
       });
     }
+  },
+  created() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.authUser = user;
+        this.getTodo()
+      } else {
+        this.authUser = {}
+      }
+    })
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
