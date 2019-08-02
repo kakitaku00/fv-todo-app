@@ -18,6 +18,7 @@
         </li>
       </ul>
     </div>
+    <button @click="logout">Logout</button>
   </div>
 </template>
 
@@ -66,8 +67,29 @@ export default {
       if (window.confirm("Are you sure delete ?")) {
         db.collection("todos").doc(todo.id).delete()
       }
+    },
+    logout() {
+      firebase.auth().signOut().then(()=>{
+        console.log("logout");
+      })
+      .catch( (error)=>{
+        console.log(error);
+      });
     }
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          // ユーザーログインが完了していたら次の処理へ => コンポーネントの作成へ
+          next();
+        } else {
+          // ログインしていない場合はログイン画面へ
+          vm.$router.push("/login")
+        }
+      })
+    })
+  }
 }
 </script>
 
