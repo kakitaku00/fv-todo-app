@@ -64,9 +64,10 @@ export default {
       db.collection("todos").doc(todo.id).update({...todo})
     },
     deleteTodo: function(todo) {
-      if (window.confirm("Are you sure delete ?")) {
-        db.collection("todos").doc(todo.id).delete()
-      }
+      db.collection("todos").doc(todo.id).delete()
+      // if (window.confirm("Are you sure delete ?")) {
+      //   db.collection("todos").doc(todo.id).delete()
+      // }
     },
     logout() {
       firebase.auth().signOut().then(()=>{
