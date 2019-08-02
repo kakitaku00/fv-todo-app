@@ -24,9 +24,7 @@
 
 <script>
 import firebase from 'firebase/app'
-require("firebase/auth")
 import { db } from '../main'
-import { get } from 'http';
 
 export default {
   name: "todo",
