@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Todo from './views/Todo.vue' // 追加
-import Login from './views/Login.vue'
+import Login from './views/Login.vue' // 追加
 
 Vue.use(Router)
 

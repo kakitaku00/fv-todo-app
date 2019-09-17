@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3>Please Login with your google account to continue</h3>
-    <button @click="login">signin with google</button>
+    <input type="button" value="signin with google" @click="login">
   </div>
 </template>
 
